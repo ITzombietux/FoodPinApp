@@ -16,4 +16,8 @@ extension UIColor {
         let blueValue = CGFloat(blue) / 255.0
         self.init(red: redValue, green: greenValue, blue: blueValue, alpha: 1.0)
     }
+    
+    static let wedgewood = UIColor(named: "Wedgewood")!
+    static let grayChateau = UIColor(named: "Gray Chateau")!
+    static let cloudBurst = UIColor(named: "Cloud Burst")!
 }

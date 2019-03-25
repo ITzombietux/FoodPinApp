@@ -44,4 +44,10 @@ class RestaurantTableViewCell: UITableViewCell {
             heartImageView.image = heartImage
         }
     }
+    
+    var nameColor: UIColor? {
+        didSet {
+            nameLabel.textColor = nameColor
+        }
+    }
 }

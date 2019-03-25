@@ -8,12 +8,14 @@
 
 import UIKit
 import CoreData
+import UserNotifications
 
 class RestaurantViewController: UIViewController, NSFetchedResultsControllerDelegate {
     
     var restaurants: [RestaurantMO] = []
     var fetchResultController: NSFetchedResultsController<RestaurantMO>!
     var dataSource: RestaurantDataSource
+    var settingsController: SettingsController?
     
     @IBOutlet var tableView: UITableView!
     @IBOutlet var emptyRestaurantView: UIView!
@@ -27,7 +29,8 @@ class RestaurantViewController: UIViewController, NSFetchedResultsControllerDele
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+        
+        prepareNotification()
         
         tableView.delegate = self
   
@@ -116,6 +119,31 @@ class RestaurantViewController: UIViewController, NSFetchedResultsControllerDele
         if let fetchedObjects = controller.fetchedObjects {
             restaurants = fetchedObjects as! [RestaurantMO]
         }
+    }
+    
+    func prepareNotification() {
+        // Make sure the restaurant array is not empty
+        if restaurants.count <= 0 {
+            return
+        }
+        
+        // Pick a restaurant randomly
+        let randomNum = Int.random(in: 0..<restaurants.count)
+        let suggestedRestaurant = restaurants[randomNum]
+        
+        // Create the user notification
+        let content = UNMutableNotificationContent()
+        content.title = "Restaurant Recommendation"
+        content.subtitle = "Try new food today"
+        content.body = "I recommend you to check out \(suggestedRestaurant.name!). The restaurant is one of your favorites. It is located at \(suggestedRestaurant.location!). Would you like to give it a try?"
+        content.sound = UNNotificationSound.default
+        
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false)
+        let request = UNNotificationRequest(identifier: "foodpin.restaurantSuggestion", content: content, trigger: trigger)
+        
+        // Schedule the notification
+        UNUserNotificationCenter.current().add(request, withCompletionHandler: nil)
+        
     }
     
     @IBAction func unwindToHome(segue: UIStoryboardSegue) {
@@ -209,5 +237,17 @@ extension RestaurantViewController: UITableViewDelegate {
         }
         
         return 1
+    }
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+//        if let cell = cell as? QuestionCell,
+//            let scheme = settingsController?.scheme {
+//            cell.titleColor = scheme.titleColor
+//        }
+        
+        if let cell = cell as? RestaurantTableViewCell,
+            let scheme = settingsController?.scheme {
+            cell.nameColor = scheme.titleColor
+        }
     }
 }
